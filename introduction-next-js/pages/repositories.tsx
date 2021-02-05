@@ -1,3 +1,4 @@
+import { GetServerSideProps } from "next"
 import { useEffect, useState } from "react"
 
 type Repo = {
@@ -5,15 +6,11 @@ type Repo = {
   description: string;
 }
 
-export default function Repositories() {
-  const [repos, setRepos] = useState<Repo[]>([])
+type RepositoriesProps = {
+  repos: Repo[];
+}
 
-  useEffect(() => {
-    fetch('https://api.github.com/users/yangvaz/repos')
-      .then(response => response.json())
-      .then((data) => setRepos(data))
-  }, [])
-
+export default function Repositories({ repos }: RepositoriesProps) {
   return (
     <div>
       <h1> Repositórios: </h1>
@@ -24,4 +21,17 @@ export default function Repositories() {
       </ul>
     </div>
   )
+}
+
+export const getServerSideProps: GetServerSideProps = async () => {
+  const response = await fetch('https://api.github.com/users/yangvaz/repos')
+  const data = await response.json();
+
+  console.log(data);
+
+  return {
+    props: {
+      repos: data
+    }
+  }
 }
